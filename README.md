@@ -119,5 +119,105 @@
 
 ## 输出方式
 
+- ```sass
+        nav {
+            ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            li { display: inline-block; }
+
+            a {
+                display: block;
+                padding: 6px 12px;
+                text-decoration: none;
+            }
+        }
+        ```
+
 - 嵌套输出方式`nested`
-    + 
+    + ```css
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none; }
+        nav li {
+            display: inline-block; }
+        nav a {
+            display: block;
+            padding: 6px 12px;
+            text-decoration: none; }
+        ```
+    + 在编译的时候带上参数“ --style nested”:`sass --watch test.scss:test.css --style nested`
+- 嵌套输出方式 `expanded`
+    + ```css
+        nav ul {
+            margin: 0;
+            padding: 0;
+            list-style: none; 
+        }
+        nav li {
+            display: inline-block; 
+        }
+        nav a {
+            display: block;
+            padding: 6px 12px;
+            text-decoration: none; 
+        }
+        ```
+    + 在编译的时候带上参数“ --style expanded”: `sass --watch test.scss:test.css --style expanded`
+- 嵌套输出方式 `compact`
+    + ```css
+        nav ul { margin: 0; padding: 0; list-style: none; }
+        nav li { display: inline-block; }
+        nav a { display: block; padding: 6px 12px; text-decoration: none; }
+        ```
+    + 在编译的时候带上参数“ --style compact”:`sass --watch test.scss:test.css --style compact`
+- 压缩输出方式 `compressed`
+    + ```css
+        nav ul{margin:0;padding:0;list-style:none}nav li{display:inline-block}nav a{display:block;padding:6px 12px;text-decoration:none}
+        ```
+    + 压缩输出方式会去掉标准的 Sass 和 CSS 注释及空格。也就是压缩好的 CSS 代码样式风格
+    + 在编译的时候带上参数“ --style compressed”:`sass --watch test.scss:test.css --style compressed`
+
+## Sass的基本特性
+
+- 变量声明
+    - 1.声明变量的符号“$” 2.变量名称 3.赋予变量的值
+        + 如果值后面加上`!default`则表示默认值
+- 普通变量与默认变量
+    + sass 的默认变量仅需要在值后面加上 `!default` 即可
+    + sass 的默认变量一般是用来设置默认值，然后根据需求来覆盖的，覆盖的方式也很简单，只需要在默认变量之前重新声明下变量即可
+        - ```sass 
+            $baseLineHeight: 2;
+            $baseLineHeight: 1.5 !default;
+          ```
+- 变量调用
+
+- 局部变量和全局变量
+    + 全局变量就是定义在元素外面的变量
+    + 局部变量就是定义在元素内部的变量
+- 嵌套-选择器嵌套
+- 嵌套-属性嵌套
+    + ```sass
+        .box {
+            border-top: 1px solid red;
+            border-bottom: 1px solid green;
+        }
+        ```
+    + ```sass
+        .box {
+            border: {
+                top: 1px solid red;
+                bottom: 1px solid green;
+            }
+        }
+        ```
+- 嵌套-伪类嵌套
+    + 我们应该尽可能避免选择器嵌套
+
+- 混合宏-声明混合宏
+    + 相当于代码片段复用
+- 混合宏-调用混合宏
