@@ -1,4 +1,4 @@
-# Sass学习
+# Sass入门学习
 
 ## 概念
 
@@ -375,3 +375,155 @@
         ```
 - 字符运算
     + 注意，如果有引号的字符串被添加了一个没有引号的字符串 （也就是，带引号的字符串在 + 符号左侧）， 结果会是一个有引号的字符串。 同样的，如果一个没有引号的字符串被添加了一个有引号的字符串 （没有引号的字符串在 + 符号左侧）， 结果将是一个没有引号的字符串
+
+# Sass进阶
+
+- 控制命令
+    + `@if`
+        - @if 指令是一个 SassScript，它可以根据条件来处理样式块，如果条件为 true 返回一个样式块，反之 false 返回另一个样式块。在 Sass 中除了 @if 之，还可以配合 @else if 和 @else 一起使用
+        - ```sass
+            @mixin blockOrHidden($boolean:true) {
+                @if $boolean {
+                    @debug "$boolean is #{$boolean}";
+                    display: block;
+                    }
+                @else {
+                    @debug "$boolean is #{$boolean}";
+                    display: none;
+                    }
+            }
+
+            .block {
+                @include blockOrHidden;
+            }
+
+            .hidden{
+                @include blockOrHidden(false);
+            }
+            ```
+    + `@for`
+        - @for $i from <start> through <end>
+          @for $i from <start> to <end>
+        - 这两个的区别是关键字 through 表示包括 end 这个数，而 to 则不包括 end 这个数
+        - ```sass
+            @for $i from 1 through 3 {
+                .item-#{$i} { width: 2em * $i; }
+            }
+            ->
+            .item-1 {
+                width: 2em;
+            }
+
+            .item-2 {
+                width: 4em;
+            }
+
+            .item-3 {
+                width: 6em;
+            }
+            ```
+        - ```sass
+            $grid-prefix: span !default;
+            $grid-width: 60px !default;
+            $grid-gutter: 20px !default;
+
+            %grid {
+            float: left;
+            margin-left: $grid-gutter / 2;
+            margin-right: $grid-gutter / 2;
+            }
+
+            //through
+            @for $i from 1 through 12 {
+            .#{$grid-prefix}#{$i}{
+                width: $grid-width * $i + $grid-gutter * ($i - 1);
+                @extend %grid;
+            }  
+            }
+
+            //to
+            @for $i from 1 to 13 {
+            .#{$grid-prefix}#{$i}{
+                width: $grid-width * $i + $grid-gutter * ($i - 1);
+                @extend %grid;
+            }  
+            }
+            ```
+    + `@while`
+        - ```sass
+            //SCSS
+            $types: 4;
+            $type-width: 20px;
+
+            @while $types > 0 {
+                .while-#{$types} {
+                    width: $type-width + $types;
+                }
+                $types: $types - 1;
+            }
+            ```
+    + `@each`
+        - ```sass
+            $list: adam john wynn mason kuroir;//$list 就是一个列表
+
+            @mixin author-images {
+                @each $author in $list {
+                    .photo-#{$author} {
+                        background: url("/images/avatars/#{$author}.png") no-repeat;
+                    }
+                }
+            }
+
+            .author-bio {
+                @include author-images;
+            }
+            ```
+- 函数
+    + 字符串函数/unquote()
+        - `unquote($string)`删除字符串中的引号
+        - `quote($string)`给字符串添加引号
+            + 使用 quote() 函数只能给字符串增加双引号，而且字符串中间有单引号或者空格时，需要用单引号或双引号括起，否则编译的时候将会报错
+    + `To-upper-case()` 函数将字符串小写字母转换成大写字母
+    + `To-lower-case()` 函数 与 To-upper-case() 刚好相反，将字符串转换成小写字母
+    + 数字函数
+        - `percentage($value)`：将一个不带单位的数转换成百分比值
+        - `round($value)`：将数值四舍五入，转换成一个最接近的整数
+        - `ceil($value)`：将大于自己的小数转换成下一位整数
+        - `floor($value)`：将一个数去除他的小数部分
+        - `abs($value)`：返回一个数的绝对值
+        - `min($numbers…)`：找出几个数值之间的最小值
+        - `max($numbers…)`：找出几个数值之间的最大值
+        - `random()`: 获取随机数
+    + 列表函数
+        - `length($list)`：返回一个列表的长度值
+            + length() 函数中的列表参数之间使用空格隔开，不能使用逗号，否则函数将会出错
+        - `nth($list, $n)`：返回一个列表中指定的某个标签值
+            + 在 Sass 中，nth() 函数和其他语言不同，1 是指列表中的第一个标签值，2 是指列给中的第二个标签值
+        - `join($list1, $list2, [$separator])`：将两个列给连接在一起，变成一个列表
+        - `append($list1, $val, [$separator])`：将某个值放在列表的最后
+            + 在 append() 函数中，可以显示的设置 `$separator` 参数
+            + 如果取值为 `comma` 将会以逗号分隔列表项
+            + 如果取值为 `space` 将会以空格分隔列表项
+        - `zip($lists…)`：将几个列表结合成一个多维的列表
+            + ```sass
+                >> zip(1px 2px 3px,solid dashed dotted,green blue red)
+                ((1px "solid" #008000), (2px "dashed" #0000ff), (3px "dotted" #ff0000))
+                ```
+        - `index($list, $value)`：返回一个值在列表中的位置值
+    + Instrospection函数
+        - `type-of($value)`：返回一个值的类型
+        - `unit($number)`：返回一个值的单位
+        - `unitless($number)`：判断一个值是否带有单位
+        - `comparable($number-1, $number-2)`：判断两个值是否可以做加、减和合并
+    + Miscellaneous函数
+        - 他有两个值，当条件成立返回一种值，当条件不成立时返回另一种值
+        - `if($condition,$if-true,$if-false)`
+    + Map
+        - ```sass
+            $map: (
+                $key1: value1,
+                $key2: value2,
+                $key3: value3
+            )
+            ```
+
