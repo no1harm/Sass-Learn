@@ -5,3 +5,10 @@ body{
     width: $width;
     height: $height;
 }
+@mixin demo {
+    border-bottom: 5px;
+}
+
+#demo-extend {
+    @include demo
+}

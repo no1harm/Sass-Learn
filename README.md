@@ -120,6 +120,7 @@
 ## 输出方式
 
 - ```sass
+        //示例
         nav {
             ul {
                 margin: 0;
@@ -219,5 +220,158 @@
     + 我们应该尽可能避免选择器嵌套
 
 - 混合宏-声明混合宏
+    + `@mixin`
     + 相当于代码片段复用
 - 混合宏-调用混合宏
+    + `@include`
+- 混合宏参数
+    + 不带值的参数
+        - ```sass
+            @mixin border-radius($radius){
+                -webkit-border-radius: $radius;
+                border-radius: $radius:3px;
+            }
+            ->
+            .box {
+                @include border-radius(3px);
+            }
+            ```
+    + 带值的参数
+        - ```sass
+            @mixin border-radius($radius:3px){
+                -webkit-border-radius: $radius;
+                border-radius: $radius;
+            }
+            ->
+            .box {
+                @include border-radius;
+            }
+            ```
+    + 多个参数
+       - ```sass
+            @mixin center($width,$height){
+                width: $width;
+                height: $height;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-top: -($height) / 2;
+                margin-left: -($width) / 2;
+            }
+            ->
+            .box-center {
+                @include center(500px,300px);
+            }
+            ```
+       - 有一个特别的参数“…”。当混合宏传的参数过多之时，可以使用参数来替代
+            + ```sass
+                 @mixin box-shadow($shadows...){
+                    @if length($shadows) >= 1 {
+                        -webkit-box-shadow: $shadows;
+                        box-shadow: $shadows;
+                    } @else {
+                        $shadows: 0 0 2px rgba(#000,.25);
+                        -webkit-box-shadow: $shadow;
+                        box-shadow: $shadow;
+                    }
+                }
+                ->
+                .box {
+                    @include box-shadow(0 0 1px rgba(#000,.5),0 0 2px rgba(#000,.2));
+                }
+                ```
+- 混合宏不足
+    + 会生成冗余的代码块
+
+- 扩展/继承 @extend
+    + ```sass
+        //@extend
+        .btn {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: #f36;
+            color: #fff;
+            @extend .btn;
+        }
+
+        .btn-second {
+            background-color: orange;
+            color: #fff;
+            @extend .btn;
+        }
+        ```
+- 占位符 %placeholder
+    + %placeholder 声明的代码，如果不被 @extend 调用的话，不会产生任何代码
+    + ```sass
+        %mt5 {
+            magin-top:5px;
+        }
+        %pt5 {
+            magin-top:5px;
+        }
+        .btn {
+            @extend %md5;
+            @extend %pt5;
+        }
+        .block {
+            @extend;
+            span {
+                @extend @pt5
+            }
+        }
+        ```
+- 混合宏/继承/占位符 比较使用
+    + 如果你的代码块中涉及到变量，建议使用混合宏来创建相同的代码块
+    + 如果你的代码块不需要专任何变量参数，而且有一个基类已在文件中存在，那么建议使用 Sass 的继承
+    + 占位符是独立定义，不调用的时候是不会在 CSS 中产生任何代码；继承是首先有一个基类存在，不管调用与不调用，基类的样式都将会出现在编译出来的 CSS 代码中
+
+- 插值 #{}
+    + #{}语法并不是随处可用，你也不能在 mixin 中调用
+    + 可以在 @extend 中使用插值
+    + ```sass
+        $properties: (margin, padding);
+        @mixin set-value($side, $value) {
+            @each $prop in $properties {
+                #{$prop}-#{$side}: $value;
+            }
+        }
+        .login-box {
+            @include set-value(top, 14px);
+        }
+        ```
+- 注释
+    + 类似 CSS 的注释方式，使用 ”/* ”开头，结属使用 ”*/ ”，会在编译出来的 CSS 显示
+    + 类似 JavaScript 的注释方式，使用“//” ，在编译出来的 CSS 中不会显示
+- 数据类型
+    + 数字: 如，1、 2、 13、 10px
+    + 字符串：有引号字符串或无引号字符串，如，"foo"、 'bar'、 baz
+    + 颜色：如，blue、 #04a3f9、 rgba(255,0,0,0.5)
+    + 布尔型：如，true、 false
+    + 空值：如，null
+    + 值列表：用空格或者逗号分开，如，1.5em 1em 0 2em 、 Helvetica, Arial, sans-serif
+
+## Sass运算
+
+- 加法
+- 减法
+- 乘法
+- 除法
+    + ”/  ”符号被当作除法运算符时有以下几种情况：
+        + 如果数值或它的任意部分是存储在一个变量中或是函数的返回值。
+        + 如果数值被圆括号包围。
+        + 如果数值是另一个数学表达式的一部分。
+- 变量运算
+- 数字运算
+- 颜色运算
+    + ```sass
+        p {
+            color: #010203 + #040506;
+        }
+        //计算公式为 01 + 04 = 05、02 + 05 = 07 和 03 + 06 = 09
+        ```
+- 字符运算
+    + 注意，如果有引号的字符串被添加了一个没有引号的字符串 （也就是，带引号的字符串在 + 符号左侧）， 结果会是一个有引号的字符串。 同样的，如果一个没有引号的字符串被添加了一个有引号的字符串 （没有引号的字符串在 + 符号左侧）， 结果将是一个没有引号的字符串

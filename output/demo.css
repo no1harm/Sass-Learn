@@ -2,4 +2,7 @@ body {
   width: 200px;
   height: 400px; }
 
+#demo-extend {
+  border-bottom: 5px; }
+
 /*# sourceMappingURL=demo.css.map */
